@@ -58,6 +58,8 @@ def main():
     for row in rows:
         print("\t".join(row))
 
+    
+
 
 if __name__ == '__main__':
     main()
