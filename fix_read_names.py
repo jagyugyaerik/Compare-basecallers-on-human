@@ -2,10 +2,10 @@ from sys import argv, exit
 from re import search
 
 
-def load_fastq(input):
+def load_fastq(input_fastq):
     reads = []
 
-    with open(input) as fastq:
+    with open(input_fastq) as fastq:
         for line in fastq:
             name = line.strip()[1:]
             seq = next(fastq).strip()
@@ -18,13 +18,14 @@ def load_fastq(input):
 def main():
     input_reads_filename = argv[1]
     read_id_to_fast5_filename = argv[2]
+    count = 0
 
-    print("\nReading " + read_id_to_fast5_filename)
     read_id_to_fast5, fast5_to_read_id = {}, {}
     with open(read_id_to_fast5_filename, "rt") as read_id_to_fast5_file:
-        read_id_to_fast5_file.readline()
         for line in read_id_to_fast5_file.readlines():
-            read_id, fast5, _, _ = line.split('\t')
+            read_id, fast5 = line.split('\t')
+            if fast5.endswith('\n'):
+                fast5 = fast5[:-1]
             if fast5.endswith(".fast5"):
                 fast5 = fast5[:-6]
             if read_id in read_id_to_fast5_file:
@@ -34,10 +35,9 @@ def main():
             read_id_to_fast5[read_id] = fast5
             fast5_to_read_id[fast5] = read_id
 
-    print("\nLoading reads from: " + input_reads_filename)
+
     reads = load_fastq(input_reads_filename)
 
-    print("\nFixing read names...")
     output_reads = []
 
 
@@ -57,21 +57,17 @@ def main():
         if read_id is not None:
             new_header = read_id + ' ' + read_id_to_fast5[read_id]
         else:
-            new_header = fast5_to_read_id[fast5_name] + ' ' + fast5_name
+            new_header = fast5_to_read_id[fast5_name] + ' ' + repr(fast5_name)
 
         output_reads.append([new_header, seq, qual])
 
-    print("\nSorting reads...")
     output_reads = sorted(output_reads)
 
-    print("\nWrite reads to file...")
     for header, seq, qual in output_reads:
-        print('@' + header)
+        print('@' + header[:-1])
         print(seq)
         print('+')
         print(qual)
-
-    print("\nDone")
 
 
 if __name__ == '__main__':
