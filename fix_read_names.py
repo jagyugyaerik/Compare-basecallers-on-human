@@ -6,7 +6,7 @@ def load_fastq(input_fastq):
     reads = []
 
     with open(input_fastq) as fastq:
-        for line in fastq:
+        for line in fastq.readlines():
             name = line.strip()[1:]
             seq = next(fastq).strip()
             _ = next(fastq)
@@ -18,7 +18,6 @@ def load_fastq(input_fastq):
 def main():
     input_reads_filename = argv[1]
     read_id_to_fast5_filename = argv[2]
-    count = 0
 
     read_id_to_fast5, fast5_to_read_id = {}, {}
     with open(read_id_to_fast5_filename, "rt") as read_id_to_fast5_file:
@@ -57,7 +56,7 @@ def main():
         if read_id is not None:
             new_header = read_id + ' ' + read_id_to_fast5[read_id]
         else:
-            new_header = fast5_to_read_id[fast5_name] + ' ' + repr(fast5_name)
+            new_header = fast5_to_read_id[fast5_name] + ' ' + fast5_name
 
         output_reads.append([new_header, seq, qual])
 
