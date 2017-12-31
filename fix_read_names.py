@@ -5,11 +5,11 @@ from re import search
 def load_fastq(input_fastq):
     reads = []
 
-    with open(input_fastq) as fastq:
-        for line in fastq.readlines():
+    with open(input_fastq, "rt") as fastq:
+        for line in fastq:
             name = line.strip()[1:]
             seq = next(fastq).strip()
-            _ = next(fastq)
+            _ = next(fastq).strip()
             qual = next(fastq).strip()
             reads.append([name, seq, qual])
     return reads
@@ -63,7 +63,7 @@ def main():
     output_reads = sorted(output_reads)
 
     for header, seq, qual in output_reads:
-        print('@' + header[:-1])
+        print('@' + header.strip())
         print(seq)
         print('+')
         print(qual)
