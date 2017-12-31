@@ -1,14 +1,16 @@
+from __future__ import division
+
 from h5py import File
 from os import walk, path
 from sys import argv
 from re import compile
 
 
-def find_fast5_files(directory):
+def find_fast5_files(directory, ext):
     fast5 = []
     for dir, _, filenames in walk(directory):
         for filename in filenames:
-            if filename.endswith(".fast5"):
+            if filename.endswith(ext):
                 fast5.append(path.join(dir, filename))
     return  fast5
 
@@ -41,24 +43,27 @@ def get_hdf5_start_time(read, keys):
 
 
 def main():
-    print("\t".join(["Name", "Fast5 name", "Signal lenght", "Start time"]))
+    # print("\t".join(["Name", "Fast5 name", "Signal lenght", "Start time"]))
     rows = []
     count = 0
-    for fast5 in find_fast5_files(argv[1]):
+    all = 100002
+    for fast5 in find_fast5_files(argv[1], ".fast5"):
         fast5_name = fast5.split("/")[-1][:-6]
         with File(fast5) as read:
             keys = get_hdf5_keys(read)
             read_id = get_hdf5_read_id(read, keys)
-            singal_length = get_hdf5_signal_length(read, keys)
-            start_time = get_hdf5_start_time(read, keys)
+            # singal_length = get_hdf5_signal_length(read, keys)
+            # start_time = get_hdf5_start_time(read, keys)
             count += 1
-            rows.append([read_id, fast5_name, str(singal_length), str(start_time)])
+            rows.append([read_id, fast5_name]) # , str(singal_length), str(start_time)])
+            print "Reading {}% ...".format((count/all)*100)
 
+    print("Writing output file...")
     rows = sorted(rows)
-    for row in rows:
-        print("\t".join(row))
-
-    
+    with open(argv[2], "wt") as output:
+        for row in rows:
+            output.write("\t".join(row))
+            output.write('\n')
 
 
 if __name__ == '__main__':
