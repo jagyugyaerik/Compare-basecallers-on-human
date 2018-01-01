@@ -52,10 +52,10 @@ def main():
         with File(fast5) as read:
             keys = get_hdf5_keys(read)
             read_id = get_hdf5_read_id(read, keys)
-            # singal_length = get_hdf5_signal_length(read, keys)
-            # start_time = get_hdf5_start_time(read, keys)
+            singal_length = get_hdf5_signal_length(read, keys)
+            start_time = get_hdf5_start_time(read, keys)
             count += 1
-            rows.append([read_id, fast5_name]) # , str(singal_length), str(start_time)])
+            rows.append([read_id, fast5_name, str(singal_length), str(start_time)])
             print "Reading {}% ...".format((count/all)*100)
 
     print("Writing output file...")
