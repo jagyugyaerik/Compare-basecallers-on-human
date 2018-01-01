@@ -22,6 +22,7 @@ for f in $read_files; do
     all_reads=02_basecalled_reads/"$f"
     all_reads_fixed_names=03_read_names_fixed/"$f"
     extract_reads=04_extract_reads/"$f"
+    alignment=05_alignment/"$set".paf
 
     printf "\n\n\n\n"
     echo "NORMALISE READ HEADERS: "$set
@@ -32,5 +33,11 @@ for f in $read_files; do
     echo "EXTRACTING COMMON READS: "$set
     echo "--------------------------------------------------------------------------------"
     python "$python_script_dir"/extract_common_reads.py $all_reads 03_read_names_fixed/common_reads.tsv > $extract_reads
+
+    printf "\n\n\n\n"
+    echo "ALIGN READ TO REFERENCE: "$set
+    echo "--------------------------------------------------------------------------------"
+    ./minimap2 -k12 -t 12 -c /opt/human_hg19/chr1.fa "$extract_reads" > "$alignment"
+    python
 
 done

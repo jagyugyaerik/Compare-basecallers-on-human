@@ -71,5 +71,6 @@ def main():
         print('\t'.join([read_name, str(read_length), str(whole_read_identity), relative_length]))
 
 
+
 if __name__ == '__main__':
     main()
